@@ -6,7 +6,7 @@
 
 ---
 
-1. ¿Qué se muestra en la siguiente imagen?
+1*. ¿Qué se muestra en la siguiente imagen?
 
     - (x) ![GitHub Logo](https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png)
     - ( ) Un icono de Gmail

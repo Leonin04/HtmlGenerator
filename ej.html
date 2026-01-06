@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    
+    <title>Test de Ejemplo Completo</title>
+    
+    <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --correct: rgba(52, 211, 153, 0.15);
+            --partial: rgba(251, 191, 36, 0.15);
+            --incorrect: rgba(244, 63, 94, 0.15);
+            --accent: #3b82f6;
+            --bg-color: #0a0a0c;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: #f0f0f0;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            margin: 0; padding: 0; line-height: 1.6;
+        }
+
+        .bg-lights-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; overflow: hidden;
+            background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #0a0a0c 100%);
+        }
+
+        .light-spot { position: absolute; width: 40vw; height: 40vw; border-radius: 50%; filter: blur(80px); opacity: 0.15; }
+        .spot-1 { top: -10%; left: -10%; background: #3b82f6; }
+        .spot-2 { bottom: -10%; right: -10%; background: #8b5cf6; }
+
+        .content-wrapper { width: 100%; max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+
+        h1 { background: linear-gradient(to bottom, #fff, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; font-size: 2.5rem; margin: 0;}
+        .author { text-align: center; opacity: 0.6; font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 40px; }
+
+        .info-box, .question {
+            background: var(--glass); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px; margin-bottom: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .button-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; width: 100%; }
+        button {
+            background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--glass-border);
+            border-radius: 12px; padding: 12px; cursor: pointer; transition: all 0.3s ease;
+        }
+        button:hover { background: var(--accent); box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); }
+
+        .enunciado { font-size: 1.1rem; margin-bottom: 20px; display: block; }
+        .opcion-linea {
+            display: flex; align-items: center; gap: 12px; margin-top: 8px; padding: 12px;
+            border-radius: 12px; cursor: pointer; transition: background 0.2s;
+        }
+        .opcion-linea:hover { background: rgba(255,255,255,0.05); }
+
+        input[type="checkbox"], input[type="radio"] { accent-color: var(--accent); width: 18px; height: 18px; }
+
+        /* Estados */
+        .question.correct { border-color: #34d399; background: var(--correct); }
+        .question.incorrect { border-color: #f43f5e; background: var(--incorrect); }
+        .question.partial { border-color: #fbbf24; background: var(--partial); }
+        
+        #btn-finalizar-examen {
+            display: none; width: 100%; padding: 20px; background: var(--accent);
+            color: white; border: none; border-radius: 15px; font-size: 1.2rem; cursor: pointer;
+        }
+
+        pre code { border-radius: 10px; padding: 15px !important; background: rgba(0,0,0,0.3) !important; }
+    </style>
+</head>
+<body>
+    <div class="bg-lights-container">
+        <div class="light-spot spot-1"></div>
+        <div class="light-spot spot-2"></div>
+    </div>
+
+    <div class="content-wrapper">
+        <h1>Test de Ejemplo Completo</h1>
+        <div class="author">{{AUTOR}} | {{TITULACION}}</div>
+
+        <div class="info-box">
+            <p>{{DESCRIPCION}}</p>
+            <div class="button-grid">
+                <button onclick="shuffleQuestions()">Barajar</button>
+                <button onclick="resetAnswers()">Reiniciar</button>
+                <button onclick="showCorrectAnswers()">Resolver Todo</button>
+                <button onclick="activarModoExamen()">Modo Examen</button>
+                <button onclick="mostrarResumen()">Resumen</button>
+            </div>
+        </div>
+
+        <div id="questions-container"><div class="question" id="q1" data-correct="0">
+<div class="enunciado-bloque"><div class="num">1.</div><div class="texto"><p>¿Qué se muestra en la siguiente imagen?</p>
+<pre><code>- (x) ![GitHub Logo](https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png)
+- ( ) Un icono de Gmail
+- ( ) Un logo de Google Drive
+- ( ) Un sticker de Telegram
+</code></pre>
+<ol>
+<li>
+<p>¿Cuál es el resultado de la siguiente fórmula?</p>
+<ul>
+<li>( ) $$\frac{1}{3} + \frac{1}{6}$$</li>
+<li>(x) $$\frac{1}{2}$$</li>
+<li>( ) $$\frac{2}{3}$$</li>
+<li>( ) $$1$$</li>
+</ul>
+</li>
+</ol>
+<!-- 3. ¿Qué código C++ imprime "Hola Mundo"? -->
+
+<pre><code>&lt;!-- Para el código y tablas se recomienda poner (codesnap de code,...) --&gt;
+</code></pre>
+<ol>
+<li>
+<p>¿Qué afirmaciones sobre Markdown son correctas?</p>
+<ul>
+<li>(x) Permite usar <strong>negritas</strong> y <em>cursivas</em></li>
+<li>(x) Se puede escribir <code>código</code> inline</li>
+<li>( ) Requiere compilarse como C++</li>
+<li>( ) No permite insertar imágenes</li>
+</ul>
+</li>
+</ol>
+<!-- Esto es un comentario que no debe verse -->
+
+<!-- 1. ¿Qué hace este código Python?
+
+--></div></div>
+<ol type="a">
+<li><label class="opcion-linea"><input type="checkbox" name="q1" value="0"> <p>```python
+  def saluda():
+      print("Hola")
+  saluda()</p></label></li>
+<li><label class="opcion-linea"><input type="checkbox" name="q1" value="1"> <p>Muestra un error por no definir la función correctamente. --&gt;</p></label></li>
+</ol>
+</div>
+<div class="question" id="q2" data-correct="0">
+<div class="enunciado"><strong>2.</strong> ¿Qué tabla representa correctamente Markdown?</div>
+<ol type="a">
+<li class="opcion-bloque"><input type="radio" name="q2" value="0"><div><table>
+<thead>
+<tr>
+<th>Lenguaje</th>
+<th>Sintaxis</th>
+<th>Ejemplo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Markdown</td>
+<td><strong>bold</strong></td>
+<td>bold</td>
+</tr>
+<tr>
+<td>HTML</td>
+<td><b>bold</b></td>
+<td>bold</td>
+</tr>
+</tbody>
+</table></div></li>
+<li class="opcion-bloque"><input type="radio" name="q2" value="1"><div><table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Código</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HTML</td>
+<td><div></td>
+</tr>
+<tr>
+<td>CSS</td>
+<td>display</td>
+</tr>
+</tbody>
+</table></div></li>
+</ol>
+</div>
+<div class="question" id="q3" data-correct="2">
+<div class="enunciado"><strong>3.</strong> Observa la siguiente imagen y tabla:</p>
+<p><img alt="Diagrama" src="images/ugr-rojo.png"></p>
+<table>
+<thead>
+<tr>
+<th>Protocolo</th>
+<th>Capa OSI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HTTP</td>
+<td>Aplicación</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>Transporte</td>
+</tr>
+</tbody>
+</table>
+<p>¿Qué protocolo pertenece a la capa de red?</div>
+<ol type="a">
+<li><label class="opcion-linea"><input type="radio" name="q3" value="0"> <p>HTTP</p></label></li>
+<li><label class="opcion-linea"><input type="radio" name="q3" value="1"> <p>TCP</p></label></li>
+<li><label class="opcion-linea"><input type="radio" name="q3" value="2"> <p>IP</p></label></li>
+<li><label class="opcion-linea"><input type="radio" name="q3" value="3"> <p>DNS</p></label></li>
+</ol>
+</div>
+<div class="question" id="q4" data-correct="0">
+<div class="enunciado"><strong>4.</strong> ¿Qué muestra este vídeo ?</p>
+<p><video controls style="max-width:100%; height:auto;"><source src="videos/video1.mp4" type="video/mp4">Tu navegador no soporta video.</video></div>
+<ol type="a">
+<li><label class="opcion-linea"><input type="radio" name="q4" value="0"> <p>Muestra una animación</p></label></li>
+<li><label class="opcion-linea"><input type="radio" name="q4" value="1"> <p>Es un audio</p></label></li>
+<li><label class="opcion-linea"><input type="radio" name="q4" value="2"> <p>Da error</p></label></li>
+<li><label class="opcion-linea"><input type="radio" name="q4" value="3"> <p>Está vacío</p></label></li>
+</ol>
+</div>
+<div class="question" id="q5" data-correct="0">
+<div class="enunciado-bloque"><div class="num">5.</div><div class="texto"><p>¿Qué hace el siguiente código en Python?</p>
+<pre><code class="language-python">    print(&quot;Hola mundo&quot;)
+</code></pre>
+<pre><code>- (x) Imprime "Hola mundo"
+- ( ) Lanza un error
+- ( ) No hace nada
+- ( ) Es un comentario
+</code></pre>
+<ol>
+<li><audio controls><source src="audios/audio1.mp3" type="audio/mpeg">Tu navegador no soporta audio.</audio></li>
+</ol></div></div>
+<ol type="a">
+<li><label class="opcion-linea"><input type="radio" name="q5" value="0"> <p>Opción correcta</p></label></li>
+<li><label class="opcion-linea"><input type="radio" name="q5" value="1"> <p>Opción incorrecta</p></label></li>
+</ol>
+</div>
+</div>
+        <button id="btn-finalizar-examen" onclick="corregirExamen()">Finalizar y Corregir Examen</button>
+    </div>
+
+    <script>
+        let modoExamen = false;
+
+        function initLogic() {
+            document.querySelectorAll(".question").forEach(q => {
+                q.querySelectorAll('input').forEach(input => {
+                    input.addEventListener("change", () => {
+                        if (!modoExamen) corregirPregunta(q);
+                    });
+                });
+            });
+        }
+        initLogic();
+
+        function corregirPregunta(q) {
+            const correctas = q.dataset.correct.split(",").map(Number);
+            const inputs = Array.from(q.querySelectorAll('input'));
+            const marcadas = inputs.map((inp, i) => inp.checked ? i : null).filter(i => i !== null);
+
+            q.classList.remove("correct", "partial", "incorrect");
+            if (marcadas.length === 0) return;
+
+            const todasCorrectas = correctas.every(c => marcadas.includes(c));
+            const ningunaExtra = marcadas.every(m => correctas.includes(m));
+
+            if (todasCorrectas && ningunaExtra) q.classList.add("correct");
+            else if (marcadas.some(m => correctas.includes(m)) && ningunaExtra) q.classList.add("partial");
+            else q.classList.add("incorrect");
+        }
+
+        function activarModoExamen() {
+            if (!confirm("¿Activar modo examen? Se ocultará la corrección automática.")) return;
+            modoExamen = true;
+            resetAnswers();
+            document.getElementById("btn-finalizar-examen").style.display = "block";
+            alert("Modo Examen activado. Responde a todas y pulsa el botón del final.");
+        }
+
+        function corregirExamen() {
+            document.querySelectorAll(".question").forEach(q => corregirPregunta(q));
+            modoExamen = false;
+            document.getElementById("btn-finalizar-examen").style.display = "none";
+            mostrarResumen();
+            window.scrollTo(0, 0);
+        }
+
+        function shuffleQuestions() {
+            const container = document.getElementById("questions-container");
+            const qs = Array.from(container.children);
+            for (let i = qs.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                container.appendChild(qs[j]);
+            }
+            // Re-numerar visualmente
+            document.querySelectorAll(".question").forEach((q, i) => {
+                const strong = q.querySelector(".enunciado strong");
+                strong.innerText = (i + 1) + ".";
+            });
+        }
+
+        function resetAnswers() {
+            document.querySelectorAll("input").forEach(i => i.checked = false);
+            document.querySelectorAll(".question").forEach(q => q.classList.remove("correct", "partial", "incorrect"));
+        }
+
+        function showCorrectAnswers() {
+            document.querySelectorAll(".question").forEach(q => {
+                const correctas = q.dataset.correct.split(",").map(Number);
+                q.querySelectorAll("input").forEach((inp, i) => inp.checked = correctas.includes(i));
+                corregirPregunta(q);
+            });
+        }
+
+        function mostrarResumen() {
+            const c = document.querySelectorAll(".question.correct").length;
+            const p = document.querySelectorAll(".question.partial").length;
+            const i = document.querySelectorAll(".question.incorrect").length;
+            const total = document.querySelectorAll(".question").length;
+            alert(`Resultados:\nCorrectas: ${c}\nParciales: ${p}\nIncorrectas: ${i}\nTotal: ${total}`);
+        }
+    </script>
+</body>
+</html>

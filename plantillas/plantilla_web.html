@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    
+    <title>{{TITULO}} | InfoAdeHub</title>
+    
+    <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --correct: rgba(52, 211, 153, 0.2);
+            --partial: rgba(251, 191, 36, 0.2);
+            --incorrect: rgba(244, 63, 94, 0.2);
+            --accent: #3b82f6;
+            --bg-color: #0a0a0c;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: #f0f0f0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            overflow-x: hidden;
+            display: block !important; 
+            text-align: center;
+        }
+
+        .bg-lights-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #0a0a0c 100%);
+        }
+
+        .light-spot {
+            position: absolute;
+            width: 40vw; height: 40vw;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+            z-index: -1;
+        }
+        .spot-1 { top: -10%; left: -10%; background: #3b82f6; }
+        .spot-2 { bottom: -10%; right: -10%; background: #8b5cf6; }
+        .spot-3 { top: 40%; left: 30%; background: #10b981; width: 30vw; height: 30vw; }
+
+        .content-wrapper {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            display: inline-block;
+            text-align: left;
+        }
+
+        h1 {
+            background: linear-gradient(to bottom, #fff, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .author {
+            text-align: center;
+            opacity: 0.6;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+        }
+
+        .question {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .question:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+
+        button {
+            background: rgba(255,255,255,0.05);
+            color: white;
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 12px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: var(--accent);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+        }
+
+        /* AJUSTE PARA FORMULAS INLINE */
+        .enunciado, .opcion-linea span {
+            display: inline-block;
+            vertical-align: middle;
+            width: auto;
+        }
+
+        .opcion-linea {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-top: 8px;
+            padding: 12px 15px;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .opcion-linea span {
+            flex: 1;
+        }
+
+        .explicacion {
+            border-left: 4px solid var(--accent);
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 0 12px 12px 0;
+            font-size: 0.9rem;
+        }
+
+        .question.correct { border-color: #34d399; background: var(--correct); }
+        .question.partial { border-color: #fbbf24; background: var(--partial); }
+        .question.incorrect { border-color: #f43f5e; background: var(--incorrect); }
+
+        /* Ajuste de Párrafos en Opciones */
+        .opcion-linea span p { display: inline; margin: 0; }
+
+        @media print {
+            .bg-lights-container, button { display: none !important; }
+            body { background: white !important; color: black !important; }
+            .question { background: white !important; border: 1px solid #ccc !important; page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-lights-container">
+        <div class="light-spot spot-1"></div>
+        <div class="light-spot spot-2"></div>
+        <div class="light-spot spot-3"></div>
+    </div>
+
+    <div class="content-wrapper">
+        <h1>{{TITULO}}</h1>
+        <div class="author">INFOADEHUB | RECURSOS ACADÉMICOS</div>
+
+        <div class="button-grid">
+            <button onclick="shuffleQuestions()">Desordenar</button>
+            <button onclick="showCorrectAnswers()">Resolver Todo</button>
+            <button onclick="resetAnswers()">Reiniciar</button>
+            <button id="toggleIncorrectasBtn" onclick="toggleMostrarIncorrectas()">Solo Incorrectas</button>
+            <button onclick="mostrarResumen()">Resumen</button>
+            <button onclick="activarModoExamen()">Modo Examen</button>
+            <button onclick="window.print()">Imprimir / PDF</button>
+        </div>
+
+        <div id="questions-container">
+            {{PREGUNTAS_HTML}}
+        </div>
+
+        <button id="btn-finalizar-examen" style="display:none; width: 100%; padding: 20px; background: var(--accent); font-weight: bold; border: none; border-radius: 15px;" onclick="corregirExamen()">Finalizar y Corregir Examen</button>
+    </div>
+
+    <script>
+        let modoExamen = false;
+        let mostrandoSoloIncorrectas = false;
+
+        function initCorreccion() {
+            document.querySelectorAll(".question").forEach((q) => {
+                q.querySelectorAll('input').forEach((inp) => {
+                    inp.addEventListener("change", () => {
+                        if (!modoExamen) corregirPregunta(q);
+                    });
+                });
+            });
+        }
+        initCorreccion();
+
+        function corregirPregunta(q) {
+            const correctas = q.dataset.correct.split(",").map(Number);
+            const inputs = Array.from(q.querySelectorAll('input'));
+            const marcadas = inputs.map((c, i) => (c.checked ? i : null)).filter((i) => i !== null);
+            const divExpl = q.querySelector('.explicacion');
+            
+            q.classList.remove("correct", "partial", "incorrect");
+            if (divExpl) divExpl.style.display = "none";
+            
+            if (marcadas.length === 0) return;
+
+            const todasCorrectas = correctas.every((i) => marcadas.includes(i));
+            const ningunaExtra = marcadas.every((i) => correctas.includes(i));
+
+            if (todasCorrectas && ningunaExtra) {
+                q.classList.add("correct");
+            } else if (marcadas.some((i) => correctas.includes(i)) && ningunaExtra) {
+                q.classList.add("partial");
+                if (divExpl) divExpl.style.display = "block";
+            } else {
+                q.classList.add("incorrect");
+                if (divExpl) divExpl.style.display = "block";
+            }
+        }
+
+        function shuffleQuestions() {
+            const container = document.getElementById("questions-container");
+            const questions = Array.from(container.children);
+            for (let i = questions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                container.appendChild(questions[j]);
+            }
+            renumberQuestions();
+        }
+
+        function renumberQuestions() {
+            document.querySelectorAll(".question").forEach((q, idx) => {
+                const strong = q.querySelector(".enunciado strong");
+                if (strong) strong.innerText = (idx + 1) + ".";
+                q.querySelectorAll("input").forEach(inp => inp.name = "q" + (idx + 1));
+            });
+        }
+
+        function showCorrectAnswers() {
+            document.querySelectorAll(".question").forEach((q) => {
+                const correct = q.dataset.correct.split(",").map(Number);
+                q.querySelectorAll('input').forEach((inp, i) => inp.checked = correct.includes(i));
+                corregirPregunta(q);
+            });
+        }
+
+        function resetAnswers() {
+            document.querySelectorAll(".question").forEach((q) => {
+                q.querySelectorAll('input').forEach(inp => inp.checked = false);
+                q.classList.remove("correct", "partial", "incorrect");
+                q.style.display = "block";
+                const divExpl = q.querySelector('.explicacion');
+                if (divExpl) divExpl.style.display = "none";
+            });
+            mostrandoSoloIncorrectas = false;
+        }
+
+        function toggleMostrarIncorrectas() {
+            const btn = document.getElementById("toggleIncorrectasBtn");
+            const preguntas = document.querySelectorAll(".question");
+            
+            if (!Array.from(preguntas).some(q => q.classList.contains("correct") || q.classList.contains("incorrect"))) {
+                alert("Primero debes realizar el test.");
+                return;
+            }
+
+            preguntas.forEach(q => {
+                if (!mostrandoSoloIncorrectas) {
+                    q.style.display = (q.classList.contains("incorrect") || q.classList.contains("partial")) ? "block" : "none";
+                } else {
+                    q.style.display = "block";
+                }
+            });
+            
+            mostrandoSoloIncorrectas = !mostrandoSoloIncorrectas;
+            btn.textContent = mostrandoSoloIncorrectas ? "Mostrar Todas" : "Solo Incorrectas";
+        }
+
+        function mostrarResumen() {
+            let c = document.querySelectorAll(".question.correct").length;
+            let p = document.querySelectorAll(".question.partial").length;
+            let i = document.querySelectorAll(".question.incorrect").length;
+            alert(`Resumen:\n✔️ Correctas: ${c}\n🟡 Parciales: ${p}\n❌ Incorrectas: ${i}`);
+        }
+
+        function activarModoExamen() {
+            modoExamen = true;
+            resetAnswers();
+            document.getElementById("btn-finalizar-examen").style.display = "block";
+        }
+
+        function corregirExamen() {
+            document.querySelectorAll(".question").forEach(q => corregirPregunta(q));
+            modoExamen = false;
+            document.getElementById("btn-finalizar-examen").style.display = "none";
+            mostrarResumen();
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
